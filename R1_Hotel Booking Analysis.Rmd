@@ -1,0 +1,192 @@
+---
+title: 'Project1: Hotel Booking Analysis'
+output:
+  html_document: default
+---
+
+## Step 1: Import data
+
+The data in this example is originally from the article Hotel Booking Demand Datasets (<https://www.sciencedirect.com/science/article/pii/S2352340918315191>), written by Nuno Antonio, Ana Almeida, and Luis Nunes for Data in Brief, Volume 22, February 2019.
+
+The data was downloaded and cleaned by Thomas Mock and Antoine Bichat for \#TidyTuesday during the week of February 11th, 2020 (<https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-02-11/readme.md>).
+
+More about the dataset : <https://www.kaggle.com/jessemostipak/hotel-booking-demand>
+
+Reading the file 'hotel_bookings.csv' into a data frame:
+
+```{r Importing data to R studio}
+hotel_bookings <- read.csv("hotel_bookings.csv")
+```
+
+## Step 2: View Data
+
+Getting initial impressions of dataset 
+
+```{r looking at data}
+head(hotel_bookings)
+```
+
+```{r looking at column names}
+colnames(hotel_bookings)
+```
+
+## Step 3: Loading 'tidyverse' and 'ggplot2' package
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+## Step 4: Filtering the dataset
+
+(1) Using `filter()` function to create a data set with only **city hotels that are online TA**
+
+```{r filtering a dataset to just city hotels that are online TA}
+onlineta_city_hotels <- filter(hotel_bookings, 
+                           (hotel=="City Hotel" & 
+                             hotel_bookings$market_segment=="Online TA"))
+```
+
+  Viewing new data frame `onlineta_city_hotels`
+
+```{r View}
+View(onlineta_city_hotels)
+```
+
+(2) Creating new data frame `onlineta_city_hotels_v2`:
+
+```{r filtering a dataset with the pipe}
+onlineta_city_hotels_v2 <- hotel_bookings %>%
+  filter(hotel=="City Hotel") %>%
+  filter(market_segment=="Online TA")
+```
+
+Viewing `onlineta_city_hotels_v2` dataset
+
+```{r view second dataframe}
+View(onlineta_city_hotels_v2)
+```
+
+Finding year of earliest and latest hotel booking and saving them to use later in plotting charts
+```{r earliest year}
+min(hotel_bookings$arrival_date_year)
+```
+
+```{r latest year}
+max(hotel_bookings$arrival_date_year)
+```
+
+```{r saving as variable}
+mindate <- min(hotel_bookings$arrival_date_year)
+maxdate <- max(hotel_bookings$arrival_date_year)
+```
+
+## Step 4: Visual Analysis of Hotel Bookings dataset
+
+### Analyzing Distribution Channnels
+
+  **(1) Initial chart**
+
+```{r Initial chart}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel))+
+  labs(title = "Bookings vs Distribution channel", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+  **(2) Hotel Bookings with respect to other Factors**
+
+Check for number bookings for each distribution type - is different depending on whether or not there was a deposit or what market segment they represent.
+
+```{r Deposit type with respect to No. of bookings }
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, fill=deposit_type))+
+  labs(title="Deposit type with respect to No. of bookings", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+  
+  **(3) Market Segment  with respect to No. of bookings**
+
+```{r Market Segment  with respect to No. of bookings}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel, fill=market_segment))+
+  labs(title = "Market Segment  with respect to No. of bookings", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+  **(4) Visualizing Charts with each feature**
+
+Creating separate charts for each deposit type and market segment to help them understand the differences more clearly.
+
+```{r Creating a plot for each deposit type }
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type)+
+  labs(title = "plot for each deposit type", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+  
+  **(5) Creating a plot for each Market segment**
+
+```{r Creating a plot for each Market segment}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~market_segment)+
+  labs(title = "plot for each Market segment", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+  **(6) Create a single plot with both deposit type and market segment and explore the differences**
+
+```{r creating a plot with both deposit type and market segment }
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = distribution_channel)) +
+  facet_wrap(~deposit_type~market_segment)+
+  labs(title = "plot with both deposit type and market segment", subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+### Ananlyzing Hotel Types
+
+  **(1) Comparison of market segments by hotel type for hotel bookings**
+
+```{r faceting a plot with a title}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = market_segment)) +
+  facet_wrap(~hotel) +
+  labs(title="Comparison of market segments by hotel type for hotel bookings", 
+       subtitle =paste0("Data from: ", mindate, " to ", maxdate),
+       x="Market Segment",
+       y="Number of Bookings")
+```
+ 
+  **(2) Market Segment  with respect to Types of hotels**
+
+
+creating  a bar chart showing each hotel type and market segment using different colors to represent each market segment:
+
+```{r  Market Segment  with respect to Types of hotels}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = hotel, fill = market_segment))+
+  labs(title = "Market Segment  with respect to Types of hotels", 
+       subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+  **(3) Market Segment  with respect to Types of hotels in grid View**
+
+use the facet_wrap() function to create a separate plot for each market segment: 
+
+```{r Each Market Segment  with respect to Types of hotels in facet_wrap}
+ggplot(data = hotel_bookings) +
+  geom_bar(mapping = aes(x = hotel)) +
+  facet_wrap(~market_segment)+
+  labs(title="Each Market Segment  with respect to Types of hotels",
+       subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
+
+  **Visulaize filtered dataset from _step4_ **
+
+Plotting a scatter plot using new filtered data below with either `onlineta_city_hotels` or `onlineta_city_hotels_v2` :
+
+```{r creating a plot part two}
+ggplot(data = onlineta_city_hotels) +
+  geom_point(mapping = aes(x = lead_time, y = children))+
+  labs(title="Online City Hotels", 
+       subtitle =paste0("Data from: ", mindate, " to ", maxdate))
+```
+
