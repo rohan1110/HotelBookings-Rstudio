@@ -10,7 +10,9 @@ More about the dataset : https://www.kaggle.com/jessemostipak/hotel-booking-dema
 
 **Link to Rpubs:** http://rpubs.com/rohan11/HotelBokingAnalysis
 
-![Hotel Booking Analysis icon](https://user-images.githubusercontent.com/63396845/125573987-5be7fbf0-61c5-4187-8745-bb030c306bd3.png)
+
+![HotelBooking](https://user-images.githubusercontent.com/63396845/125578437-0b7a9e85-a943-4732-8c4a-7195362e88f6.png)
+
 
 **Libraries used**
 * Tidyverse
